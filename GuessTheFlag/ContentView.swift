@@ -38,12 +38,12 @@ struct ContentView: View {
         "US"
     ].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
-    @State private var playerSelection = 0
+    @State private var playerSelection = -1
     
     @State private var playerScore = 0
     
     @State private var rotationAmount = 0.0
-    @State private var flagOpacity = 1.0
+    @State private var animationScaleAmount = 1.0
     
     var body: some View {
         ZStack {
@@ -65,7 +65,7 @@ struct ContentView: View {
                     Button(action: {
                         flagTapped(number)
                         playerSelection = number
-                        flagOpacity = 0.25
+                        animationScaleAmount = 0.25
                         
                         withAnimation {
                             rotationAmount += 360
@@ -77,8 +77,9 @@ struct ContentView: View {
                         .degrees(number == playerSelection ? rotationAmount : 0.0),
                         axis: (x: 0, y: 1, z: 0)
                     )
-                    .opacity(number != playerSelection ? flagOpacity : 1.0)
-                    .animation(.default, value: flagOpacity)
+                    .opacity(number != playerSelection ? animationScaleAmount : 1.0)
+                    .scaleEffect(number != playerSelection ? animationScaleAmount : 1.0)
+                    .animation(.default, value: animationScaleAmount)
                 }
                 
                 Text("Score: \(playerScore)")
@@ -113,7 +114,9 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
-        flagOpacity = 1.0
+        playerSelection = -1
+        rotationAmount = 0.0
+        animationScaleAmount = 1.0
     }
 }
 
