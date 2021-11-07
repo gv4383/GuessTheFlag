@@ -23,6 +23,7 @@ struct ContentView: View {
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var scoreDescription = ""
+    
     @State private var countries = [
         "Estonia",
         "France",
@@ -37,7 +38,11 @@ struct ContentView: View {
         "US"
     ].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
+    @State private var playerSelection = 0
+    
     @State private var playerScore = 0
+    
+    @State private var rotationAmount = 0.0
     
     var body: some View {
         ZStack {
@@ -57,10 +62,19 @@ struct ContentView: View {
                 
                 ForEach(0..<3) { number in
                     Button(action: {
-                        self.flagTapped(number)
+                        flagTapped(number)
+                        playerSelection = number
+                        
+                        withAnimation {
+                            rotationAmount += 360
+                        }
                     }) {
-                        FlagImage(fileName: self.countries[number])
+                        FlagImage(fileName: countries[number])
                     }
+                    .rotation3DEffect(
+                        .degrees(number == playerSelection ? rotationAmount : 0.0),
+                        axis: (x: 0, y: 1, z: 0)
+                    )
                 }
                 
                 Text("Score: \(playerScore)")
@@ -73,7 +87,7 @@ struct ContentView: View {
         }
         .alert(isPresented: $showingScore) {
             Alert(title: Text(scoreTitle), message: Text(scoreDescription), dismissButton: .default(Text("Continue")) {
-                self.askQuestion()
+                askQuestion()
             })
         }
     }
@@ -95,6 +109,7 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        rotationAmount = 0.0
     }
 }
 
